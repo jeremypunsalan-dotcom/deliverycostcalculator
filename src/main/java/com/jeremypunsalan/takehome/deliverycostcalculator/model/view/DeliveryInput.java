@@ -6,7 +6,6 @@ public class DeliveryInput {
 	Double height;
 	Double width;
 	Double length;
-	Double volume;
 	String voucherCode;
 	String key;
 	
@@ -34,12 +33,6 @@ public class DeliveryInput {
 	public void setLength(Double length) {
 		this.length = length;
 	}
-	public Double getVolume() {
-		return volume;
-	}
-	public void setVolume(Double volume) {
-		this.volume = volume;
-	}
 	public String getVoucherCode() {
 		return voucherCode;
 	}
@@ -55,7 +48,7 @@ public class DeliveryInput {
 	@Override
 	public String toString() {
 		return "DeliveryInput [weight=" + weight + ", height=" + height + ", width=" + width + ", length=" + length
-				+ ", volume=" + volume + ", voucherCode=" + voucherCode + ", key=" + key + "]";
+				+ ", voucherCode=" + voucherCode + ", key=" + key + "]";
 	}
 
 }
