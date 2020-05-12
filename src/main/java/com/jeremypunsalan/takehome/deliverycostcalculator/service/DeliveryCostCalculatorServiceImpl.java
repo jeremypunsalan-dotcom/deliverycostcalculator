@@ -20,7 +20,6 @@ import com.jeremypunsalan.takehome.deliverycostcalculator.constants.Constants;
 import com.jeremypunsalan.takehome.deliverycostcalculator.exception.DeliveryRejectedException;
 import com.jeremypunsalan.takehome.deliverycostcalculator.exception.ValidationException;
 import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.Delivery;
-import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.DeliveryInput;
 import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.VoucherItem;
 import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.validator.InputValidator;
 
@@ -56,10 +55,8 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 	}
 
 	@Override
-	public Double calculateDeliveryCost(DeliveryInput deliveryInput, Boolean isStatic) throws ValidationException, RestClientException, DeliveryRejectedException {
+	public Double calculateDeliveryCost(Delivery delivery, Boolean isStatic) throws ValidationException, RestClientException, DeliveryRejectedException {
 
-		Delivery delivery = this.createDeliveryDomain(deliveryInput);
-		
 		Map<Integer, String> errors = InputValidator.validateInput(delivery);
 		if(InputValidator.hasErrors(errors)) {
 			throw new ValidationException(InputValidator.getErrorMessages(errors));  
@@ -94,17 +91,6 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 		return deliveryFact.getCost();
 	}
 	
-	private Delivery createDeliveryDomain(DeliveryInput deliveryInput) {
-		Delivery delivery = new Delivery();
-		delivery.setHeight(deliveryInput.getHeight());
-		delivery.setKey(deliveryInput.getKey());
-		delivery.setLength(deliveryInput.getLength());
-		delivery.setVoucherCode(deliveryInput.getVoucherCode());
-		delivery.setWeight(deliveryInput.getWeight());
-		delivery.setWidth(deliveryInput.getWidth());
-		return delivery;
-	}
-
 	@Override
 	public Double fetchDiscountFromVoucher(Delivery delivery) throws ValidationException, RestClientException  {
 

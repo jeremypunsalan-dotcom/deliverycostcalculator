@@ -17,7 +17,6 @@ import org.springframework.web.client.RestClientException;
 import com.jeremypunsalan.takehome.deliverycostcalculator.config.PropertiesLoader;
 import com.jeremypunsalan.takehome.deliverycostcalculator.constants.Constants;
 import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.Delivery;
-import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.DeliveryInput;
 import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.DeliveryRules;
 import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.validator.InputValidator;
 import com.jeremypunsalan.takehome.deliverycostcalculator.service.DeliveryCostCalculatorServiceImpl;
@@ -49,7 +48,7 @@ class DeliveryCostCalculatorApplicationTests {
 	@Test
 	void testCalculateDeliveryCostService() throws Exception {
 
-		final DeliveryInput deliveryFirstCase = new DeliveryInput();
+		final Delivery deliveryFirstCase = new Delivery();
 		deliveryFirstCase.setHeight((double) 1);
 		deliveryFirstCase.setLength((double) 1);
 		deliveryFirstCase.setWidth((double) 1);
@@ -62,7 +61,7 @@ class DeliveryCostCalculatorApplicationTests {
 		assertTrue(exception.getMessage().contains(Constants.REJECTED_COST));
 
 		// condition 2: greater than 10
-		DeliveryInput delivery = new DeliveryInput();
+		Delivery delivery = new Delivery();
 		delivery.setWeight((double) 20);
 		delivery.setHeight((double) 1);
 		delivery.setLength((double) 1);
@@ -70,7 +69,7 @@ class DeliveryCostCalculatorApplicationTests {
 		assertEquals(new Double(400), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// condition 3: less than 1500 cm3
-		delivery = new DeliveryInput();
+		delivery = new Delivery();
 		delivery.setWeight((double) 10);
 		delivery.setHeight((double) 10);
 		delivery.setLength((double) 10);
@@ -78,7 +77,7 @@ class DeliveryCostCalculatorApplicationTests {
 		assertEquals(new Double(30), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// condition 4: less than 2500 cm3
-		delivery = new DeliveryInput();
+		delivery = new Delivery();
 		delivery.setWeight((double) 10);
 		delivery.setHeight((double) 12);
 		delivery.setLength((double) 12);
@@ -86,7 +85,7 @@ class DeliveryCostCalculatorApplicationTests {
 		assertEquals(new Double(69.12), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// condition 5: large parcel
-		delivery = new DeliveryInput();
+		delivery = new Delivery();
 		delivery.setWeight((double) 10);
 		delivery.setHeight((double) 15);
 		delivery.setLength((double) 15);
@@ -150,7 +149,7 @@ class DeliveryCostCalculatorApplicationTests {
 	void testInputValidatorDelivery() {
 
 		// Input for calculating costs
-		DeliveryInput delivery = new DeliveryInput();
+		Delivery delivery = new Delivery();
 
 		// no input at all
 		assertThrows(Exception.class, () -> {

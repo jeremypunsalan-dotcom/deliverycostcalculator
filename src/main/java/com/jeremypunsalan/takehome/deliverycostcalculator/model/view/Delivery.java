@@ -1,15 +1,28 @@
 package com.jeremypunsalan.takehome.deliverycostcalculator.model.view;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Delivery item information.")
 public class Delivery {
 	
+	@ApiModelProperty(value = "Weight of the delivery parcel. Must be in KG.", required = true)
 	Double weight;
+	@ApiModelProperty(value = "Height of the delivery parcel. Must be in CM.", required = true)
 	Double height;
+	@ApiModelProperty(value = "Width of the delivery parcel. Must be in CM.", required = true)
 	Double width;
+	@ApiModelProperty(value = "Length of the delivery parcel. Must be in CM.", required = true)
 	Double length;
+	@ApiModelProperty(hidden = true)
 	Double volume;
+	@ApiModelProperty(value = "Voucher code that can be applied to redeem discount. This field is optional.", required = false)
 	String voucherCode;
+	@ApiModelProperty(value = "API key to be used together with the voucherCode. This field is optional.", required = false)
 	String key;
+	@ApiModelProperty(hidden = true)
 	Double cost;
+	@ApiModelProperty(hidden = true)
 	Double discount;
 	
 	public Double getWeight() {

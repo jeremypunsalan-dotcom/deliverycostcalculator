@@ -12,7 +12,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.jeremypunsalan.takehome.deliverycostcalculator.exception.DeliveryRejectedException;
 import com.jeremypunsalan.takehome.deliverycostcalculator.exception.ValidationException;
-import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.DeliveryInput;
+import com.jeremypunsalan.takehome.deliverycostcalculator.model.view.Delivery;
 import com.jeremypunsalan.takehome.deliverycostcalculator.service.DeliveryCostCalculatorService;
 
 import io.swagger.annotations.Api;
@@ -39,7 +39,7 @@ public class DeliveryCostCalculatorResource {
 			
 	})
 	@PostMapping(value="/calculate")
-	public Double calculateCost(@RequestBody final DeliveryInput deliveryInput) throws RestClientException, ValidationException, DeliveryRejectedException {
+	public Double calculateCost(@RequestBody final Delivery deliveryInput) throws RestClientException, ValidationException, DeliveryRejectedException {
 		
 		return service.calculateDeliveryCost(deliveryInput, Boolean.FALSE);
 		
