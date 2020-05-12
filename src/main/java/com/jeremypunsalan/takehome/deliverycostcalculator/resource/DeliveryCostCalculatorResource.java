@@ -39,9 +39,9 @@ public class DeliveryCostCalculatorResource {
 			
 	})
 	@PostMapping(value="/calculate")
-	public Double calculateCost(@RequestBody final Delivery deliveryInput) throws RestClientException, ValidationException, DeliveryRejectedException {
+	public Double calculateCost(@RequestBody final Delivery delivery) throws RestClientException, ValidationException, DeliveryRejectedException {
 		
-		return service.calculateDeliveryCost(deliveryInput, Boolean.FALSE);
+		return service.calculateDeliveryCost(delivery, Boolean.FALSE);
 		
 	}
 	
