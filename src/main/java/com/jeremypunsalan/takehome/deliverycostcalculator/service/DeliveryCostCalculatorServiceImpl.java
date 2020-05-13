@@ -1,5 +1,7 @@
 package com.jeremypunsalan.takehome.deliverycostcalculator.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,6 +49,13 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 		this.defaultVoucherUriApiKey = defaultVoucherUriApiKey;
 	}
 	
+	private String numberDecimalPlaces;
+	
+	@Autowired
+	public void setNumberDecimalPlaces(@Value("${cost.decimal}") String decimalPlaces) {
+		this.numberDecimalPlaces = decimalPlaces;
+	} 
+	
 	private RulesEngineService rulesEngineService;
 	
 	@Autowired
@@ -55,7 +64,7 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 	}
 
 	@Override
-	public Double calculateDeliveryCost(Delivery delivery, Boolean isStatic) throws ValidationException, RestClientException, DeliveryRejectedException {
+	public BigDecimal calculateDeliveryCost(Delivery delivery, Boolean isStatic) throws ValidationException, RestClientException, DeliveryRejectedException {
 
 		Map<Integer, String> errors = InputValidator.validateInput(delivery);
 		if(InputValidator.hasErrors(errors)) {
@@ -67,7 +76,7 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 		return calculateCost(delivery, isStatic);
 	}
 	
-	private Double calculateCost(Delivery delivery, Boolean isStatic) throws DeliveryRejectedException, ValidationException, RestClientException   {
+	private BigDecimal calculateCost(Delivery delivery, Boolean isStatic) throws DeliveryRejectedException, ValidationException, RestClientException   {
 		
 		System.out.println("Input: " + delivery);
 		Delivery deliveryFact = (Delivery) rulesEngineService.executeRuleEngine(deliveryDomainName, delivery, isStatic);
@@ -78,7 +87,7 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 		
 		if(Optional.ofNullable(deliveryFact.getVoucherCode()).isPresent()) {
 			try {
-				Double discount = fetchDiscountFromVoucher(deliveryFact);
+				Double discount = getDiscountFromVoucherApi(deliveryFact);
 				if(Optional.ofNullable(discount).isPresent()) {
 					deliveryFact.setCost(deliveryFact.getCost() - discount);
 					System.out.println("Output with discount: " + deliveryFact);
@@ -88,11 +97,27 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 			}
 			
 		}
-		return deliveryFact.getCost();
+		
+		BigDecimal cost = new BigDecimal(deliveryFact.getCost())
+				.setScale(Integer.parseInt(numberDecimalPlaces), RoundingMode.HALF_EVEN);
+		
+		return cost;
 	}
 	
 	@Override
-	public Double fetchDiscountFromVoucher(Delivery delivery) throws ValidationException, RestClientException  {
+	public BigDecimal getDiscountFromVoucherApi(String voucherCode, String key) throws ValidationException, RestClientException {
+		
+		Delivery delivery = new Delivery();
+		delivery.setVoucherCode(voucherCode);
+		delivery.setKey(key);
+		
+		BigDecimal discount = new BigDecimal(getDiscountFromVoucherApi(delivery))
+				.setScale(Integer.parseInt(numberDecimalPlaces), RoundingMode.HALF_EVEN);
+		
+		return discount;
+	}
+	
+	private Double getDiscountFromVoucherApi(Delivery delivery) throws ValidationException, RestClientException  {
 
 		if(!Optional.ofNullable(delivery.getVoucherCode()).isPresent()
 				|| Constants.BLANK.equals(delivery.getVoucherCode())) 
@@ -128,6 +153,8 @@ public class DeliveryCostCalculatorServiceImpl implements DeliveryCostCalculator
 		
 		
 	}
+
+
 
 	
 

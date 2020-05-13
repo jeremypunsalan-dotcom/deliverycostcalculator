@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,9 +38,11 @@ class DeliveryCostCalculatorApplicationTests {
 			String domainName = property.getProperty(Constants.APP_PROPERTY_DELIVERY_DOMAIN);
 			String voucherUri = property.getProperty("voucher.uri");
 			String voucherKey = property.getProperty("voucher.defaultkey");
+			String scale = property.getProperty("cost.decimal");
 			service.setDeliveryDomainName(domainName);
 			service.setVoucherUri(voucherUri);
 			service.setDefaultVoucherUriApiKey(voucherKey);
+			service.setNumberDecimalPlaces(scale);
 
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -66,7 +70,7 @@ class DeliveryCostCalculatorApplicationTests {
 		delivery.setHeight((double) 1);
 		delivery.setLength((double) 1);
 		delivery.setWidth((double) 1);
-		assertEquals(new Double(400), service.calculateDeliveryCost(delivery, Boolean.TRUE));
+		assertEquals(new BigDecimal(400).setScale(2, RoundingMode.HALF_EVEN), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// condition 3: less than 1500 cm3
 		delivery = new Delivery();
@@ -74,7 +78,7 @@ class DeliveryCostCalculatorApplicationTests {
 		delivery.setHeight((double) 10);
 		delivery.setLength((double) 10);
 		delivery.setWidth((double) 10);
-		assertEquals(new Double(30), service.calculateDeliveryCost(delivery, Boolean.TRUE));
+		assertEquals(new BigDecimal(30.00).setScale(2, RoundingMode.HALF_EVEN), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// condition 4: less than 2500 cm3
 		delivery = new Delivery();
@@ -82,7 +86,7 @@ class DeliveryCostCalculatorApplicationTests {
 		delivery.setHeight((double) 12);
 		delivery.setLength((double) 12);
 		delivery.setWidth((double) 12);
-		assertEquals(new Double(69.12), service.calculateDeliveryCost(delivery, Boolean.TRUE));
+		assertEquals(new BigDecimal(69.12).setScale(2, RoundingMode.HALF_EVEN), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// condition 5: large parcel
 		delivery = new Delivery();
@@ -90,56 +94,43 @@ class DeliveryCostCalculatorApplicationTests {
 		delivery.setHeight((double) 15);
 		delivery.setLength((double) 15);
 		delivery.setWidth((double) 15);
-		assertEquals(new Double(168.75), service.calculateDeliveryCost(delivery, Boolean.TRUE));
+		assertEquals(new BigDecimal(168.75).setScale(2, RoundingMode.HALF_EVEN), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 		// fetch discount from third party api and calculate cost - discount
 		delivery.setVoucherCode("MYNT");
-		assertEquals(new Double(156.5), service.calculateDeliveryCost(delivery, Boolean.TRUE));
+		assertEquals(new BigDecimal(156.50).setScale(2, RoundingMode.HALF_EVEN), service.calculateDeliveryCost(delivery, Boolean.TRUE));
 
 	}
 
 	@Test
-	void testFetchDiscountFromVoucherService() throws Exception {
+	void testGetDiscountFromVoucherApi() throws Exception {
 
 		// normal case with key
-		Delivery delivery = new Delivery();
-		delivery.setVoucherCode("GFI");
-		delivery.setKey("apikey");
-		assertEquals(new Double(7.5), service.fetchDiscountFromVoucher(delivery));
+		assertEquals(new BigDecimal(7.5).setScale(2, RoundingMode.HALF_EVEN), service.getDiscountFromVoucherApi("GFI", "apikey"));
 
 		// normal case without key
-		delivery = new Delivery();
-		delivery.setVoucherCode("MYNT");
-		assertEquals(new Double(12.25), service.fetchDiscountFromVoucher(delivery));
+		assertEquals(new BigDecimal(12.25).setScale(2, RoundingMode.HALF_EVEN), service.getDiscountFromVoucherApi("MYNT", null));
 
 		// incorrect voucher code
-		final Delivery deliveryIncorrectCode = new Delivery();
-		deliveryIncorrectCode.setVoucherCode("skdlks");
 		assertThrows(RestClientException.class, () -> {
-			service.fetchDiscountFromVoucher(deliveryIncorrectCode);
+			service.getDiscountFromVoucherApi("skdlks", null);
 		});
 
 		// incorrect api key
-		final Delivery deliveryIncorrectKey = new Delivery();
-		deliveryIncorrectKey.setVoucherCode("MYNT");
-		deliveryIncorrectKey.setKey("dawdawdwad");
 		assertThrows(RestClientException.class, () -> {
-			service.fetchDiscountFromVoucher(deliveryIncorrectKey);
+			service.getDiscountFromVoucherApi("MYNT", "dawdawdwad");
 		});
 
 		// no voucher code
 		// null value
-		final Delivery deliveryNullVoucherCode = new Delivery();
 		Exception exception1 = assertThrows(Exception.class, () -> {
-			service.fetchDiscountFromVoucher(deliveryNullVoucherCode);
+			service.getDiscountFromVoucherApi(null, null);
 		});
 		assertTrue(exception1.getMessage().contains(Constants.VOUCHER_CODE_EMPTY));
 
 		// empty value
-		final Delivery deliveryBlankVoucherCode = new Delivery();
-		deliveryBlankVoucherCode.setVoucherCode(Constants.BLANK);
 		Exception exception2 = assertThrows(Exception.class, () -> {
-			service.fetchDiscountFromVoucher(deliveryBlankVoucherCode);
+			service.getDiscountFromVoucherApi("", null);
 		});
 		assertTrue(exception2.getMessage().contains(Constants.VOUCHER_CODE_EMPTY));
 

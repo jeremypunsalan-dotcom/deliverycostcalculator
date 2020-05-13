@@ -1,11 +1,18 @@
 package com.jeremypunsalan.takehome.deliverycostcalculator.model.db;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name="rules")
@@ -30,6 +37,16 @@ public class RuleEntity {
 	
 	@Column(name = "ruleaction")
 	private String ruleAction;
+	
+	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "createdate", updatable=false)
+	private Date createDate;
+	
+	@UpdateTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "updatedate")
+	private Date updateDate;
 
 	public Integer getRuleId() {
 		return ruleId;
@@ -79,11 +96,28 @@ public class RuleEntity {
 		this.ruleAction = ruleAction;
 	}
 
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
 	@Override
 	public String toString() {
 		return "RuleEntity [ruleId=" + ruleId + ", ruleName=" + ruleName + ", ruleDescription=" + ruleDescription
 				+ ", rulePriority=" + rulePriority + ", ruleCondition=" + ruleCondition + ", ruleAction=" + ruleAction
-				+ "]";
+				+ ", createDate=" + createDate + ", updateDate=" + updateDate + "]";
 	}
+
 	
 }

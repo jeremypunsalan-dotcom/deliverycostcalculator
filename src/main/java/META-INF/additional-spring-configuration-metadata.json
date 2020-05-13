@@ -13,5 +13,10 @@
     "name": "delivery.domain",
     "type": "java.lang.String",
     "description": "A description for 'delivery.domain'"
+  },
+  {
+    "name": "cost.decimal",
+    "type": "java.lang.String",
+    "description": "A description for 'cost.decimal'"
   }
 ]}
