@@ -3,6 +3,10 @@ pipeline {
     	registry = "jeremypunsalandotcom/deliverycostcalculator"
     	registryCredential = 'dockerhub'
     	dockerImage = ''
+    	PROJECT_ID = 'jeremypunsalandotcom'
+        CLUSTER_NAME = 'jeremypunsalandotcom-cluster'
+        LOCATION = 'us-central1-c'
+        CREDENTIALS_ID = 'jeremypunsalandotcom'
 	}
     agent any
     stages {
