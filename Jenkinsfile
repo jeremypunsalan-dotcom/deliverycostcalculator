@@ -43,7 +43,7 @@ pipeline {
     	}
     	stage('GKE Deployment') {
       		steps{
-                sh "sed -i 's/jeremypunsalandotcom/deliverycostcalculator:${env.BUILD_ID}/g' deployment-deployment.yaml"
+                sh "sed -i 's/deliverycostcalculator:latest/deliverycostcalculator:${env.BUILD_ID}/g' deployment-deployment.yaml"
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'deployment-deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
             }
     	}
