@@ -41,6 +41,11 @@ pipeline {
         		}
       		}
     	}
+    	stage('Image Delete') {
+      		steps{
+        		sh "docker rmi $registry:$BUILD_NUMBER"
+      		}
+    	}
     	stage('GKE Deployment') {
       		steps{
                 sh "sed -i 's/deliverycostcalculator:latest/deliverycostcalculator:${env.BUILD_ID}/g' deployment-deployment.yaml"
@@ -56,11 +61,6 @@ pipeline {
       		steps{
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'deployment-ingress.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
             }
-    	}
-    	stage('Image Delete') {
-      		steps{
-        		sh "docker rmi $registry:$BUILD_NUMBER"
-      		}
     	}
     	
     }
