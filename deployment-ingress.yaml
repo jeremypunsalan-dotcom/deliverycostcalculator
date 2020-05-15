@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: deliverycostcalculator-api
+spec:
+  backend:
+    serviceName: deliverycostcalculator
+    servicePort: 8080
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: deliverycostcalculator
+          servicePort: 8080

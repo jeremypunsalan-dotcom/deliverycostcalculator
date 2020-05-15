@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deliverycostcalculator
+labels:
+  app: deliverycostcalculator
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+template:
+  metadata:
+    labels:
+      app: deliverycostcalculator
+  spec:
+    containers:
+    - name: deliverycostcalculator
+      image: jeremypunsalandotcom/deliverycostcalculator:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 8080
+        name: deliverycostcalculator

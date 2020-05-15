@@ -28,7 +28,7 @@ pipeline {
         		}
       		}
     	}
-    	stage('Image Deploy') {
+    	stage('Image Deploy to Registry') {
       		steps{
         		script {
           			docker.withRegistry( '', registryCredential ) {
@@ -36,6 +36,22 @@ pipeline {
           			}
         		}
       		}
+    	}
+    	stage('GKE Deployment') {
+      		steps{
+                sh "sed -i 's/jeremypunsalandotcom/deliverycostcalculator:${env.BUILD_ID}/g' deployment-deployment.yaml"
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'deployment-deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+            }
+    	}
+    	stage('GKE Service') {
+      		steps{
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'deployment-service.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+            }
+    	}
+    	stage('GKE Ingress') {
+      		steps{
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'deployment-ingress.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+            }
     	}
     	stage('Image Delete') {
       		steps{
