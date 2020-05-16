@@ -2,8 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: deliverycostcalculator-api
-  annotations:
-    networking.gke.io/managed-certificates: "api-cost-calculator-api"
 spec:
   backend:
     serviceName: deliverycostcalculator
