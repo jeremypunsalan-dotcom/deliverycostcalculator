@@ -12,4 +12,3 @@ spec:
       - backend:
           serviceName: deliverycostcalculator
           servicePort: 8080
-    host: deliverycostcalculator-api.jeremypunsalan.com
